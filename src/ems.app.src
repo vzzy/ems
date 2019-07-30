@@ -1,16 +1,17 @@
-{application, ems,
- [{description, "An OTP application"},
+{application, ems,[
+  {description, "Erlang Master-Slave"},
   {vsn, "0.1.0"},
   {registered, []},
   {mod, { ems_app, []}},
-  {applications,
-   [kernel,
-    stdlib
-   ]},
+  {applications,[
+	kernel,
+    stdlib,
+	epool
+  ]},
   {env,[]},
   {modules, []},
 
   {maintainers, []},
   {licenses, ["Apache 2.0"]},
   {links, []}
- ]}.
+]}.
