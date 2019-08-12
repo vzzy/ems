@@ -14,6 +14,10 @@
 	add_ms/1,
 	stop_ms/1,
 	
+	jump_consistent_hash/2,
+	
+	get_client_write/1,
+	get_client_read/1,
 	get_client_write/2,
 	get_client_read/2
 ]).
@@ -83,6 +87,9 @@ get_pool_name_read(PoolName,Partition)->
 	list_to_atom(lists:concat([PoolName,"_read_",Partition])).
 
 %% 获取读写Client
+get_client_write(Poolname)->
+	Pool_name_wirte = get_pool_name_write(Poolname,0),
+	epool:get_worker(Pool_name_wirte).
 get_client_write(Poolname,Key)->
 	case get_buckets(Poolname) of
 		{ok,Buckets}->
@@ -91,6 +98,16 @@ get_client_write(Poolname,Key)->
 			epool:get_worker(Pool_name_wirte);
 		R->
 			R
+	end.
+
+get_client_read(Poolname)->
+	Pool_name_read = get_pool_name_read(Poolname,0),
+	case epool:get_worker(Pool_name_read) of
+		{ok,Pid}->
+			{ok,Pid};
+		_-> %% 读不存在，用写
+			Pool_name_wirte = get_pool_name_write(Poolname,0),
+			epool:get_worker(Pool_name_wirte)
 	end.
 get_client_read(Poolname,Key)->
 	case get_buckets(Poolname) of
